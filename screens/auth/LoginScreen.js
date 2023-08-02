@@ -12,10 +12,16 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 
-export default function RegistrationScreen() {
+const initialState = {
+  email: '',
+  password: '',
+};
+
+export default function LoginScreen() {
   const [passwordShow, setPasswordShow] = useState(true);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [focusedInput, setFocusedInput] = useState(null);
+  const [state, setState] = useState(initialState);
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -33,6 +39,11 @@ export default function RegistrationScreen() {
   };
 
   const isInputFocused = inputName => focusedInput === inputName;
+
+  const onSubmitPress = () => {
+    console.log(state);
+    setState(initialState);
+  };
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
@@ -62,6 +73,10 @@ export default function RegistrationScreen() {
                     placeholderTextColor="#BDBDBD"
                     onFocus={() => handleInputFocus('email')}
                     onBlur={handleInputBlur}
+                    onChangeText={value =>
+                      setState(prevState => ({ ...prevState, email: value }))
+                    }
+                    value={state.email}
                   />
                 </View>
                 <View style={{ marginBottom: 43 }}>
@@ -75,6 +90,13 @@ export default function RegistrationScreen() {
                     secureTextEntry={passwordShow}
                     onFocus={() => handleInputFocus('password')}
                     onBlur={handleInputBlur}
+                    onChangeText={value =>
+                      setState(prevState => ({
+                        ...prevState,
+                        password: value,
+                      }))
+                    }
+                    value={state.password}
                   />
                   <TouchableOpacity
                     onPress={() => setPasswordShow(!passwordShow)}
@@ -87,7 +109,11 @@ export default function RegistrationScreen() {
                     )}
                   </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={styles.btn} activeOpacity={0.8}>
+                <TouchableOpacity
+                  style={styles.btn}
+                  activeOpacity={0.8}
+                  onPress={onSubmitPress}
+                >
                   <Text style={styles.btnTitle}>Увійти</Text>
                 </TouchableOpacity>
                 <Text style={styles.text}>Немає акаунту? Зареєструватися</Text>
@@ -117,36 +143,6 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
     backgroundColor: '#FFFFFF',
     paddingTop: 32,
-  },
-  avatar: {
-    position: 'absolute',
-
-    backgroundColor: '#F6F6F6',
-    borderRadius: 16,
-    top: -60,
-    alignSelf: 'center',
-    marginHorizontal: 'auto',
-    width: 120,
-    height: 120,
-  },
-  avatarImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 16,
-  },
-  btnAddAvatar: {
-    position: 'absolute',
-    bottom: 14,
-    right: -12.5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 25,
-    height: 25,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 50,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: '#FF6C00',
   },
   title: {
     marginBottom: 33,

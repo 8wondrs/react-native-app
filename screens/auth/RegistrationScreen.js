@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import {
   StyleSheet,
@@ -14,10 +14,17 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 
+const initialState = {
+  login: '',
+  email: '',
+  password: '',
+};
+
 export default function RegistrationScreen() {
   const [passwordShow, setPasswordShow] = useState(true);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [focusedInput, setFocusedInput] = useState(null);
+  const [state, setState] = useState(initialState);
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -35,6 +42,11 @@ export default function RegistrationScreen() {
   };
 
   const isInputFocused = inputName => focusedInput === inputName;
+
+  const onSubmitPress = () => {
+    console.log(state);
+    setState(initialState);
+  };
 
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
@@ -76,6 +88,10 @@ export default function RegistrationScreen() {
                     placeholderTextColor="#BDBDBD"
                     onFocus={() => handleInputFocus('login')}
                     onBlur={handleInputBlur}
+                    onChangeText={value =>
+                      setState(prevState => ({ ...prevState, login: value }))
+                    }
+                    value={state.login}
                   />
                 </View>
                 <View style={{ marginBottom: 16 }}>
@@ -88,6 +104,10 @@ export default function RegistrationScreen() {
                     placeholderTextColor="#BDBDBD"
                     onFocus={() => handleInputFocus('email')}
                     onBlur={handleInputBlur}
+                    onChangeText={value =>
+                      setState(prevState => ({ ...prevState, email: value }))
+                    }
+                    value={state.email}
                   />
                 </View>
                 <View style={{ marginBottom: 43 }}>
@@ -101,6 +121,13 @@ export default function RegistrationScreen() {
                     secureTextEntry={passwordShow}
                     onFocus={() => handleInputFocus('password')}
                     onBlur={handleInputBlur}
+                    onChangeText={value =>
+                      setState(prevState => ({
+                        ...prevState,
+                        password: value,
+                      }))
+                    }
+                    value={state.password}
                   />
                   <TouchableOpacity
                     onPress={() => setPasswordShow(!passwordShow)}
@@ -113,7 +140,11 @@ export default function RegistrationScreen() {
                     )}
                   </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={styles.btn} activeOpacity={0.8}>
+                <TouchableOpacity
+                  style={styles.btn}
+                  activeOpacity={0.8}
+                  onPress={onSubmitPress}
+                >
                   <Text style={styles.btnTitle}>Зареєстуватися</Text>
                 </TouchableOpacity>
                 <Text style={styles.text}>Вже є акаунт? Увійти</Text>
