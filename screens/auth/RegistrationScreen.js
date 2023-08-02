@@ -145,9 +145,9 @@ export default function RegistrationScreen() {
                   activeOpacity={0.8}
                   onPress={onSubmitPress}
                 >
-                  <Text style={styles.btnTitle}>Зареєстуватися</Text>
+                  <Text style={styles.btnTitle}>Зареєструватися</Text>
                 </TouchableOpacity>
-                <Text style={styles.text}>Вже є акаунт? Увійти</Text>
+                <Text style={styles.text}>Вже є аккаунт? Увійти</Text>
               </View>
             </View>
           </KeyboardAvoidingView>

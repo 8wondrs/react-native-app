@@ -116,7 +116,7 @@ export default function LoginScreen() {
                 >
                   <Text style={styles.btnTitle}>Увійти</Text>
                 </TouchableOpacity>
-                <Text style={styles.text}>Немає акаунту? Зареєструватися</Text>
+                <Text style={styles.text}>Немає аккаунту? Зареєструватися</Text>
               </View>
             </View>
           </KeyboardAvoidingView>
