@@ -12,6 +12,14 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from 'react-native';
+import { useDispatch } from 'react-redux';
+
+import * as ImagePicker from 'expo-image-picker';
+import { uploadBytes, ref, getDownloadURL } from 'firebase/storage';
+
+import { authSignUpUser } from '../../redux/auth/authOperation';
+
+import { storage } from '../../firebase/config';
 
 import LoginInput from '../../components/loginInput';
 import EmailInput from '../../components/emailInput';
@@ -25,6 +33,9 @@ const RegistrationScreen = ({ navigation }) => {
   const [login, setLogin] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [avatar, setAvatar] = useState(null);
+
+  const dispatch = useDispatch();
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -43,9 +54,41 @@ const RegistrationScreen = ({ navigation }) => {
 
   const isInputFocused = inputName => focusedInput === inputName;
 
-  const onSubmitPress = () => {
-    console.log(login, email, password);
-    navigation.navigate('Home');
+  const pickAvatar = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setAvatar(result.assets[0].uri);
+    }
+  };
+
+  const removeAvatar = () => {
+    setAvatar(null);
+  };
+
+  const uploadPhotoToServer = async () => {
+    let imageRef;
+
+    if (avatar) {
+      const response = await fetch(avatar);
+      const file = await response.blob();
+      const uniqueAvatarId = Date.now().toString();
+      imageRef = ref(storage, `userAvatars/${uniqueAvatarId}`);
+      await uploadBytes(imageRef, file);
+    }
+
+    const processedPhoto = await getDownloadURL(imageRef);
+    return processedPhoto;
+  };
+
+  const onSubmitPress = async () => {
+    const photo = await uploadPhotoToServer();
+    dispatch(authSignUpUser({ login, email, password, avatar: photo }));
     setLogin('');
     setEmail('');
     setPassword('');
@@ -63,16 +106,24 @@ const RegistrationScreen = ({ navigation }) => {
           >
             <View style={styles.box}>
               <View style={styles.avatar}>
-                <Image
-                  source={require('../../assets/images/avatar.jpg')}
-                  style={styles.avatarImage}
-                />
-                <TouchableOpacity
-                  style={styles.btnAddAvatar}
-                  activeOpacity={0.9}
-                >
-                  <Ionicons name="add" size={20} color="#FF6C00" />
-                </TouchableOpacity>
+                <Image source={{ uri: avatar }} style={styles.avatarImage} />
+                {!avatar ? (
+                  <TouchableOpacity
+                    style={styles.btnAddAvatar}
+                    activeOpacity={0.9}
+                    onPress={pickAvatar}
+                  >
+                    <Ionicons name="add" size={20} color="#FF6C00" />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.btnRemoveAvatar}
+                    activeOpacity={0.9}
+                    onPress={removeAvatar}
+                  >
+                    <Ionicons name="close" size={20} color="#E8E8E8" />
+                  </TouchableOpacity>
+                )}
               </View>
               <Text style={styles.title}>Реєстрація</Text>
               <View
@@ -121,7 +172,7 @@ const RegistrationScreen = ({ navigation }) => {
                   style={styles.text}
                   onPress={() => navigation.navigate('Login')}
                 >
-                  Вже є аккаунт? Увійти
+                  Вже є акаунт? Увійти
                 </Text>
               </View>
             </View>
@@ -181,6 +232,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: '#FF6C00',
+  },
+  btnRemoveAvatar: {
+    position: 'absolute',
+    bottom: 14,
+    right: -12.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 25,
+    height: 25,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 50,
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: '#E8E8E8',
   },
   title: {
     marginBottom: 33,
