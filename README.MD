@@ -1,4 +1,4 @@
-# goit-react-native-hw
+https://expo.dev/accounts/8wondrs/projects/react-native-app/builds/cb33b943-e46b-4f73-bdee-399afe2da83d
 
 ## ДЗ №1
 
